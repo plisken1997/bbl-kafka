@@ -33,8 +33,9 @@ list topic
   bin/kafka-topics --list --zookeeper localhost:2181
 ```
 
-```bash
 producer
+
+```bash
   bin/kafka-console-producer --broker-list "localhost:9092" --topic "bbl-kafka"  
 ```
 
@@ -52,10 +53,18 @@ offset
   SET 'auto.offset.reset' = 'earliest';
 ```
 
+### k-streams
 no-format
 
 ```
-  create stream game_users (user Varchar) WITH(kafka_topic='game-opinions-1', value_format='json');
+create stream game_users (user Varchar) WITH(kafka_topic='game-opinions-1', value_format='json');
+
+SELECT 
+    EXTRACTJSONFIELD(user, '$.source.type') AS source_type, 
+    EXTRACTJSONFIELD(user, '$.name') as user_name, 
+    EXTRACTJSONFIELD(user, '$.age') AS age 
+FROM 
+    game_users;
 ```
 
 with-format
@@ -65,24 +74,30 @@ create stream game_users_format AS SELECT EXTRACTJSONFIELD(user, '$.source.type'
 ```
 
 ```
-SELECT EXTRACTJSONFIELD(user, '$.source.type') AS source_type, EXTRACTJSONFIELD(user, '$.name') as user_name, EXTRACTJSONFIELD(user, '$.age') AS age FROM game_users;
-
-SELECT COUNT(EXTRACTJSONFIELD(user, '$.source.type')) AS count_source_type, EXTRACTJSONFIELD(user, '$.source.type') AS source_type FROM game_users_raw GROUP BY EXTRACTJSONFIELD(user, '$.source.type');
+SELECT 
+    source_type, 
+    user_name, 
+    age 
+FROM 
+    game_users_format;
 ```
 
+### k-table
+
 ```
-CREATE TABLE brand_metrics WITH(
-    kafka_topic='brand_metrics_count'
+CREATE TABLE game_user_sources WITH(
+    kafka_topic='game_user_sources'
 ) 
 AS
- SELECT 
-    count(EXTRACTJSONFIELD(fields, '$.brand_name')) AS COUNT_BRAND_ID, 
-    EXTRACTJSONFIELD(fields, '$.brand_name') AS BRAND_NAME 
- FROM matched_elements_good_2 
-GROUP BY 
-  EXTRACTJSONFIELD(fields, '$.brand_name');
+SELECT 
+    source_type, 
+    COUNT(source_type) AS count_sources
+FROM 
+    game_users_format
+GROUP BY
+    source_type
 ```
 
 ```
-SELECT count_brand_id, brand_name FROM brand_metrics;
+SELECT source_type, count_sources FROM game_user_sources;
 ```

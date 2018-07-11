@@ -1,3 +1,4 @@
+import sbt.ModuleID
 
 object SharedDependencies extends DependenciesVersions {
 
@@ -8,8 +9,10 @@ object SharedDependencies extends DependenciesVersions {
     Resolver.bintrayRepo("cakesolutions", "maven")
   )
 
-  val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
-  val log4j = "org.slf4j" % "slf4j-api" % log4jVersion
+  val log4j = Seq("org.slf4j" % "slf4j-api" % log4jVersion)
+
+  val logback = Seq("ch.qos.logback" % "logback-classic" % logbackVersion)
+
   val typesafeConfig = "com.typesafe" % "config" % typesafeConfigVersion
   val javaxInject = "javax.inject" % "javax.inject" % javaxInjectVersion
 
@@ -37,8 +40,9 @@ object SharedDependencies extends DependenciesVersions {
 }
 
 trait DependenciesVersions {
-  val logbackVersion = "1.1.3"
+  val logbackVersion = "1.2.3"
   val log4jVersion = "1.7.25"
+  val slf4jVersion = "1.7.23"
   val typesafeConfigVersion = "1.2.1"
   val javaxInjectVersion = "1"
   val scalacticVersion = "3.0.4"

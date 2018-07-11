@@ -10,7 +10,7 @@ resolvers += Resolver.bintrayRepo("cakesolutions", "maven")
 
 lazy val commonSettings = Seq(
   scalaVersion in ThisBuild := "2.12.2",
-  organization in ThisBuild := "net.linkvalue.bblkafka",
+  organization in ThisBuild := "net.plsk.bblkafka",
   sources in (Compile, doc) := Seq.empty
 )
 
